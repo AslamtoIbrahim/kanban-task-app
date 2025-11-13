@@ -2,6 +2,7 @@ src/
 ├─ features/
 │  ├─ auth/
 │  │  ├─ components/
+│  │  │  └─ SingupForm.tsx
 │  │  │  └─ LoginForm.tsx
 │  │  ├─ hooks/
 │  │  │  └─ useAuth.ts
