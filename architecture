@@ -1,0 +1,30 @@
+src/
+├─ features/
+│  ├─ auth/
+│  │  ├─ components/
+│  │  │  └─ LoginForm.tsx
+│  │  ├─ hooks/
+│  │  │  └─ useAuth.ts
+│  │  └─ auth.service.ts
+│  │
+│  ├─ dashboard/
+│  │  ├─ components/
+│  │  │  └─ StatsCard.tsx
+│  │  └─ dashboard.service.ts
+│  │
+├─ shared/
+│  ├─ components/
+│  │  ├─ layout/
+│  │  │  ├─ HeaderSidebar.tsx   
+│  │  │  └─ MainLayout.tsx   
+│  │  └─ Button.tsx
+│  ├─ utils/
+│  └─ hooks/
+│
+├─ pages/
+│  ├─ LoginPage.tsx
+│  ├─ SinupPage.tsx
+│  ├─ DashboardPage.tsx
+│  └─ NotFoundPage.tsx
+│
+└─ App.tsx
