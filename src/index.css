@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter&family=Playfair+Display&family=JetBrains+Mono&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Quicksand:wght@300..700&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 
 @import "tailwindcss";
 
@@ -44,6 +46,7 @@
   --font-serif: "Playfair Display", serif;
   --font-mono: "JetBrains Mono", monospace;
   --font-roboto: "Roboto Mono", monospace;
+  --font-nunito: "Nunito", sans-serif;
   --radius: 0.75rem;
   --shadow-x: 0rem;
   --shadow-y: 0.3rem;
@@ -66,6 +69,11 @@
   --shadow-2xl: 0rem 0.3rem 0.8rem 0rem hsl(0 0% 0% / 0.2);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+
+  --breakpoint-2xm: 23.4375rem; /* 375px */
+  --breakpoint-1xm: 26.5625rem; /* 425px */
+
+  
 }
 
 .dark {
@@ -104,6 +112,8 @@
   --font-sans: "Inter", sans-serif;
   --font-serif: "Playfair Display", serif;
   --font-mono: "JetBrains Mono", monospace;
+   --font-roboto: "Roboto Mono", monospace;
+  --font-nunito: "Nunito", sans-serif;
   --radius: 0.75rem;
   --shadow-x: 0rem;
   --shadow-y: 0.3rem;
@@ -124,6 +134,10 @@
   --shadow-xl: 0rem 0.3rem 0.8rem 0rem hsl(0 0% 0% / 0.4),
     0rem 8px 10px -1px hsl(0 0% 0% / 0.4);
   --shadow-2xl: 0rem 0.3rem 0.8rem 0rem hsl(0 0% 0% / 1);
+
+  /* break point */
+  --breakpoint-2xm: 23.4375rem; /* 375px */
+  --breakpoint-1xm: 26.5625rem; /* 425px */
 }
 
 @theme inline {
@@ -163,6 +177,8 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
+  --font-roboto: var(--font-roboto);
+  --font-nunito: var(--font-nunito);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -177,6 +193,10 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+
+ /* break point */
+  --breakpoint-2xm: 23.4375rem; /* 375px */
+  --breakpoint-1xm: 26.5625rem; /* 425px */
 }
 
 @layer base {
@@ -187,3 +207,29 @@
     @apply bg-background text-foreground;
   }
 }
+
+.zoom{
+  @apply transition-all scale-100 duration-200 ease-in-out hover:scale-110
+}
+
+
+.anime{
+  @apply transition-all duration-300 ease-in-out
+}
+
+/* Scrollbar width */
+::-webkit-scrollbar {
+  @apply w-1; /* Width of the scrollbar */
+}
+
+/* Scrollbar track (background) */
+::-webkit-scrollbar-track {
+   @apply bg-transparent; /* Background color of the track */
+}
+
+/* Scrollbar thumb (the bar that moves) */
+::-webkit-scrollbar-thumb {
+  @apply bg-foreground/20 rounded-md; /* Color of the scrollbar thumb */     
+}
+
+
