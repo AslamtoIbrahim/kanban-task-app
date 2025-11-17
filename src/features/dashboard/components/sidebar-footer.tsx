@@ -13,29 +13,25 @@ function SidebarFooter({
   }
 
   const onActiveClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log('isActive: ', isActive)
     e.preventDefault()
     e.stopPropagation()
     setIsActive((prv) => !prv)
   }
   return (
     <div
-      className={cn(' @container px-4 md:px-2 py-3 anime', className)}
+      className={cn('anime @container px-4 py-3 md:px-2', className)}
       {...props}
     >
       {isActive && (
-        <div
-          onClick={onBgClickHandler}
-          className="absolute top-0 left-0 h-screen w-screen z-10"
-        />
+        <div onClick={onBgClickHandler} className="fixed inset-0 z-10" />
       )}
       <User
         onClick={onActiveClick}
-        className={`@[10rem]:p-1 hover:bg-foreground/10 ${isActive && 'bg-foreground/10'}`}
+        className={`hover:bg-foreground/10 @[10rem]:p-1 ${isActive && 'bg-foreground/10'}`}
         classNameInfo="hidden @[10rem]:block anime "
       />
       <NavUser
-        className={`transition-all duration-300 ease-in-out z-20 ${isActive ? 'visible opacity-100 scale-100' : 'invisible opacity-0 scale-75'}`}
+        className={`z-20 transition-all duration-300 ease-in-out ${isActive ? 'visible scale-100 opacity-100' : 'invisible scale-75 opacity-0'}`}
       />
     </div>
   )

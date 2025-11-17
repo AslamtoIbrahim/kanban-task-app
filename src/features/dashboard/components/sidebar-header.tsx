@@ -14,12 +14,12 @@ function SidebarHeader({
     >
       <picture>
         <source
-          srcSet="/public/apple-touch-icon.png"
+          srcSet="/apple-touch-icon.png"
           media="(min-width: 768px)"
         />
         <img
           className="anime md:ml-1 size-4 @[10rem]:ml-2 "
-          src="/public/apple-touch-icon.png"
+          src="/apple-touch-icon.png"
           alt="Logo"
         />
       </picture>

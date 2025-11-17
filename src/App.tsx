@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
 import "./App.css";
 import { authService } from "./features/auth/auth.service";
-import { Spinner } from "./shared/components/ui/spinner";
 import DashboardPage from "./pages/dashboard-page";
+import { Spinner } from "./shared/components/ui/spinner";
 
 function App() {
   const { data, error, isPending } = authService.useSession();
@@ -44,6 +45,7 @@ function App() {
   return (
     <>
       <DashboardPage />
+      <ToastContainer />
     </>
   );
 }

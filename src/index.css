@@ -219,7 +219,9 @@
 
 /* Scrollbar width */
 ::-webkit-scrollbar {
-  @apply w-1; /* Width of the scrollbar */
+  /* Width of the scrollbar */
+  @apply w-1 h-2; 
+  
 }
 
 /* Scrollbar track (background) */

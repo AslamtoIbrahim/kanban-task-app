@@ -1,4 +1,4 @@
-import { Button } from "@/features/auth/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,7 +12,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/features/auth/components/ui/field";
-import { Input } from "@/features/auth/components/ui/input";
+import { Input } from "@/shared/components/ui/input";
 import { cn } from "@/features/auth/lib/utils";
 import { Spinner } from "@/shared/components/ui/spinner";
 import { zodResolver } from "@hookform/resolvers/zod";

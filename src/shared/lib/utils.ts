@@ -6,6 +6,11 @@ export const BASE_API_URL = 'https://kanban-task-backend.vercel.app'
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+export function animate(isAtive: boolean) {
+  return `transition-all duration-300 ease-in-out ${isAtive ? 'visible scale-100 opacity-100' : 'invisible scale-75 opacity-0'}`
+}
+
 export function twfl(str: string) {
   const words = str.split(' ')
   const f = words[0]?.charAt(0) || ''
