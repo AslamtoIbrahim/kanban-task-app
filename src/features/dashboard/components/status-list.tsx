@@ -1,9 +1,9 @@
 import { cn } from '@/shared/lib/utils'
-import { BsCircleFill } from 'react-icons/bs'
-import ButtonIcon from './ui/button-icon'
-import { useState } from 'react'
-import type { Status } from '../utils/types'
 import { Plus } from 'lucide-react'
+import { useState } from 'react'
+import { BsCircleFill } from 'react-icons/bs'
+import type { Status } from '../utils/types'
+import ButtonIcon from './ui/button-icon'
 
 function StatusList({
   addStatusClick,

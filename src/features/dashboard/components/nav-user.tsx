@@ -1,5 +1,7 @@
+import { authService } from '@/features/auth/auth.service'
 import { cn } from '@/shared/lib/utils'
 import { Bell, Info, LogOutIcon, Sparkle } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import ButtonIcon from './ui/button-icon'
 import ButtomTheme from './ui/button-theme'
 import User from './user'
@@ -8,9 +10,23 @@ function NavUser({
   className,
   ...props
 }: React.ComponentProps<'div'> & { className?: string }) {
+  const navigate = useNavigate()
+
   const onClickPrevent = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault()
     e.stopPropagation()
+  }
+
+  const onClickSignOuthandler = async () => {
+    await authService.signOut().then(({ data, error }) => {
+      if (error) {
+        console.log('Error signing out: ', error)
+        navigate('*')
+      } else {
+        if (data.success) navigate('/login')
+        console.log('data out: ', data)
+      }
+    })
   }
 
   return (
@@ -43,7 +59,7 @@ function NavUser({
       </ButtonIcon>
       <ButtomTheme />
       <hr />
-      <ButtonIcon>
+      <ButtonIcon onClick={onClickSignOuthandler}>
         <LogOutIcon className="text-foreground/50 size-4" />
         <p>Log out</p>
       </ButtonIcon>

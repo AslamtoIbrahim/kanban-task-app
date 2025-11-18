@@ -9,18 +9,6 @@ function App() {
   const { data, error, isPending } = authService.useSession();
   const navigate = useNavigate();
 
-  
-  // const onClickSignOuthandler = async () => {
-  //   await authService.signOut().then(({ data, error }) => {
-  //     if (error) {
-  //       console.log("Error signing out: ", error);
-  //     } else {
-  //       if (data.success) navigate("/login");
-  //       console.log("data out: ", data);
-  //     }
-  //   });
-  // };
-
   if (isPending) {
     return (
       <div className="flex h-screen w-full items-center justify-center">

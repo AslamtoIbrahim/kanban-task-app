@@ -126,7 +126,7 @@ function FormAddTag({
                   color: uniqolor(crypto.randomUUID()).color,
                 })
               }
-              className="bg-foreground w-full"
+              className="bg-foreground w-full text-background"
             >
               <Plus className="size-4" />
               Add Status

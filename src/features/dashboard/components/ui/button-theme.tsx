@@ -6,10 +6,20 @@ function ButtomTheme({
   className,
   ...props
 }: React.ComponentProps<'div'> & { className?: string }) {
-  const [isDark, setIsDark] = useState(false)
+  const [isDark, setIsDark] = useState(() => {
+    return (
+      localStorage.theme === 'dark' ||
+      (!('theme' in localStorage) &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches)
+    )
+  })
 
   const onDarkModeClick = () => {
-    setIsDark((pv) => !pv)
+    console.log('isDark: ', isDark)
+    const mode = !isDark
+    document.documentElement.classList.toggle('dark', mode)
+    localStorage.theme = mode ? 'dark' : 'light'
+    setIsDark(mode)
   }
   return (
     <div
@@ -22,10 +32,10 @@ function ButtomTheme({
       <div className="flex items-center gap-2">
         <section>
           <Sun
-            className={`text-foreground/50 absolute size-4 transition-all duration-200 ease-in-out ${isDark ? 'invisible opacity-0' : 'visible opacity-100'}`}
+            className={`text-foreground/50 absolute size-4 transition-all duration-200 ease-in-out ${!isDark ? 'visible opacity-100' : 'invisible opacity-0'}`}
           />
           <Moon
-            className={`text-foreground/50 size-4 transition-all duration-200 ease-in-out ${!isDark ? 'invisible opacity-0' : 'visible opacity-100'}`}
+            className={`text-foreground/50 size-4 transition-all duration-200 ease-in-out ${isDark ? 'visible opacity-100' : 'invisible opacity-0'}`}
           />
         </section>
         <p className="text-sm capitalize">dark mode</p>

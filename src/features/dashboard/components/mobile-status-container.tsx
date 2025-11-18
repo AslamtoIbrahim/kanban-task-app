@@ -14,7 +14,7 @@ function MobileStatusContainer({
   }
   return (
     <div className={cn('md:hidden p-4 space-y-3 2xm:px-6', className)} {...props}>
-      {[...Array(26)].map(() => (
+      {[...Array(6)].map(() => (
         <TaskItem task={task} />
       ))}
     </div>

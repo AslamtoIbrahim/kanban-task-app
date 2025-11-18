@@ -23,15 +23,16 @@ function SidebarFooter({
       {...props}
     >
       {isActive && (
-        <div onClick={onBgClickHandler} className="fixed inset-0 z-10" />
+        <div onClick={onBgClickHandler} className="fixed inset-0 z-10 " />
       )}
       <User
         onClick={onActiveClick}
-        className={`hover:bg-foreground/10 @[10rem]:p-1 ${isActive && 'bg-foreground/10'}`}
+        className={`hover:bg-foreground/10 @[10rem]:p-1 ${isActive && 'bg-foreground/10'}
+        hidden @[10rem]:flex md:flex`}
         classNameInfo="hidden @[10rem]:block anime "
       />
       <NavUser
-        className={`z-20 transition-all duration-300 ease-in-out ${isActive ? 'visible scale-100 opacity-100' : 'invisible scale-75 opacity-0'}`}
+        className={`z-20 transition-all duration-300 ease-in-out hiddenn @[10rem]:block anime ${isActive ? 'visible scale-100 opacity-100' : 'invisible scale-75 opacity-0'}`}
       />
     </div>
   )
