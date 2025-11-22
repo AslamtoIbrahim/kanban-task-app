@@ -12,11 +12,22 @@ import type { Status } from '../../utils/types'
 type SelectStatusProp = {
   statuses: Status[]
   selectStatus: (status: Status) => void
+  value: string
 }
 
-export function SelectStatus({ statuses, selectStatus }: SelectStatusProp) {
+export function SelectStatus({
+  statuses,
+  selectStatus,
+  value,
+}: SelectStatusProp) {
   return (
-    <Select defaultValue={statuses[0].title}>
+    <Select
+      value={value}
+      onValueChange={(val) => {
+        const selected = statuses.find((s) => s.title === val)
+        if (selected) selectStatus(selected)
+      }}
+    >
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Select a status" />
       </SelectTrigger>
@@ -27,7 +38,6 @@ export function SelectStatus({ statuses, selectStatus }: SelectStatusProp) {
             <SelectItem
               key={s.title}
               className="truncate"
-              onClick={() => selectStatus(s)}
               value={s.title}
             >
               {s.title}

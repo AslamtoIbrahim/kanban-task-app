@@ -1,55 +1,66 @@
 import z from 'zod'
+import { checkStatus } from '../api/status.service'
+import { checkTag } from '../api/tag.service'
 
 export const SubtaskSchema = z.object({
-  id: z.string(),
+  _tempId: z.string().optional(),
+  id: z.string().optional(),
   title: z.string(),
-  // isDone: z.boolean(),
-  // taskId: z.string().optional(),
+  isDone: z.boolean(),
+  taskId: z.string().optional(),
 })
 
 export const StatusSchema = z.object({
-  id: z.string(),
+  _tempId: z.string().optional(),
+  id: z.string().optional(),
   title: z.string(),
   color: z.string(),
-  // position: z.number().optional(),
-  // tagId: z.string().optional(),
+  position: z.number(),
+  tagId: z.string().optional(),
 })
+
 export const StatusDialogSchema = z
   .object({
-    id: z.string(),
+    id: z.string().optional(),
     title: z.string().nonempty('Status name required'),
     color: z.string(),
+    position: z.number(),
+    tagId: z.string(),
   })
-  .superRefine((data, ctx) => {
-    // console.log('superRefine: ', data)
+  .superRefine(async (data, ctx) => {
+    console.log('superRefine: ', data)
     // you add api here
-    const exist = statuses.find((s) => s.title === data.title)
-    if (exist) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'This status is already exist',
-        path: ['title'],
-      })
+    // const exist = statuses.find((s) => s.title === data.title)
+    const { exist, id } = await checkStatus(data.title, data.tagId)
+    if (data.id !== id) {
+      if (exist) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'This status is already exist',
+          path: ['title'],
+        })
+      }
     }
   })
 
 export const TaskSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   title: z.string().min(1, 'Title is required').max(40, 'Title is too long'),
-  description: z.string(),
+  description: z.string().optional(),
   position: z.number().optional(),
   currentStatus: z.string(),
   statusId: z.string().optional(),
+  subtasks: z.array(SubtaskSchema),
 })
 
 export const TaskDialogSchema = z
   .object({
-    id: z.string(),
+    id: z.string().optional(),
     title: z.string().min(1, 'Title is required').max(40, 'Title is too long'),
     description: z.string().optional(),
-    // position: z.number().optional(),
+    position: z.number(),
     currentStatus: z.string().nonempty('Status is required'),
-    // statusId: z.string().optional(),
+    statusId: z.string(),
     subtasks: z.array(SubtaskSchema),
   })
   .superRefine((data, ctx) => {
@@ -58,7 +69,7 @@ export const TaskDialogSchema = z
       if (seen.has(s.title)) {
         ctx.addIssue({
           code: 'custom',
-          message: 'this title is already exist',
+          message: 'this subtask is already exist',
           path: ['subtasks', i, 'title'],
         })
       } else {
@@ -69,10 +80,24 @@ export const TaskDialogSchema = z
 
 export const TagDialogSchema = z
   .object({
+    id: z.string().optional(),
     title: z.string().nonempty('Tag name is required'),
     statuses: z.array(StatusSchema),
   })
-  .superRefine((data, ctx) => {
+  .superRefine(async (data, ctx) => {
+    // console.log('superRefine: ', data)
+    const { exist, id } = await checkTag(data.title)
+    // console.log('check: ', exist, id, data.id)
+    if (data.id !== id) {
+      if (exist) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'This tage is already exist',
+          path: ['title'],
+        })
+      }
+    }
+
     const list = new Set<string>()
     data.statuses.forEach((s, i) => {
       if (list.has(s.title)) {
@@ -94,8 +119,61 @@ export type DialogTask = z.infer<typeof TaskDialogSchema>
 export type DialogTag = z.infer<typeof TagDialogSchema>
 export type DialogStatus = z.infer<typeof StatusDialogSchema>
 
-export const statuses = [
-  { id: 'sffszez', title: 'Todo', color: '#FACC15' }, // أصفر
-  { id: 'sffezzjjjtszez', title: 'Doing', color: '#EF4444' }, // أحمر
- 
-]
+export type Tag = {
+  id: string
+  title: string
+  statuses: Statuses[]
+}
+
+export type AxiosTag = {
+  tags: Tag[]
+  nextCursor: string | null
+}
+
+export type CreateStatus = {
+  title: string
+  color: string
+  position: number
+}
+
+export type Statuses = {
+  id: string
+  title: string
+  createdAt: Date
+  updatedAt: Date
+  color: string
+  position: number
+  tagId: string
+}
+
+export type AxiosStatuses = {
+  statuses: Statuses[]
+  nextCursor: string | null
+}
+
+export type Tasks = {
+  id: string
+  title: string
+  position: number
+  createdAt?: Date
+  updatedAt?: Date
+  description?: string
+  currentStatus: string
+  statusId: string
+  subtasks: Subtasks[]
+}
+
+
+export type AxiosTasks = {
+  tasks: Tasks[]
+  nextCursor: string | null
+}
+
+export type Subtasks = {
+  id: string
+  title: string
+  createdAt?: Date
+  updatedAt?: Date
+  isDone: boolean
+  taskId: string
+}

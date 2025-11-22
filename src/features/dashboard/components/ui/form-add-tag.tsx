@@ -21,48 +21,134 @@ import { Input } from '@/shared/components/ui/input'
 import { cn } from '@/shared/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X } from 'lucide-react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { TagDialogSchema, type DialogTag } from '../../utils/types'
 import { BsCircleFill } from 'react-icons/bs'
-import uniqolor from 'uniqolor';
-
+import { toast } from 'react-toastify'
+import uniqolor from 'uniqolor'
+import { useCreateTag, useUpdateTag } from '../../hooks/tag-hook'
+import { TagDialogSchema, type DialogTag, type Tag } from '../../utils/types'
+import { Spinner } from '@/shared/components/ui/spinner'
 
 function FormAddTag({
+  tag,
+  onCloseClik,
   className,
   ...props
-}: React.ComponentProps<'div'> & { className?: string }) {
+}: React.ComponentProps<'div'> & {
+  tag?: Tag
+  className?: string
+  onCloseClik?: () => void
+}) {
+  const [isLoading, setIsLoading] = useState(false)
+  const useAddTag = useCreateTag()
+  const updateTag = useUpdateTag()
   const form = useForm({
     resolver: zodResolver(TagDialogSchema),
+    mode: 'onChange',
     defaultValues: {
       title: '',
       statuses: [
-        { id: crypto.randomUUID(), title: 'Todo', color:  uniqolor('Todo').color},
-        { id: crypto.randomUUID(), title: 'Doing', color: '#075985' },
+        {
+          _tempId: crypto.randomUUID(),
+          title: 'Todo',
+          color: uniqolor('Todo').color,
+          position: 0,
+        },
+        {
+          _tempId: crypto.randomUUID(),
+          title: 'Done',
+          color: uniqolor('Done').color,
+          position: 1,
+        },
       ],
     },
-    mode: 'onChange',
   })
+
+  useEffect(() => {
+    if (!tag) {
+      return
+    }
+
+    form.reset({
+      id: tag.id,
+      title: tag.title,
+      statuses: tag.statuses,
+    })
+  }, [tag, form])
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'statuses',
   })
 
-  const onSubmit = async (data: DialogTag) => {
+  const onSubmit = (data: DialogTag) => {
+    setIsLoading(true)
     console.log('🧧 tag: ', data)
-    console.log('🥎 unique: ', data.statuses.filter(s => s.title.trim() !== ""))
+    console.log(
+      '🥎 unique: ',
+      data.statuses.filter((s) => s.title.trim() !== '')
+    )
+    if (tag?.id) {
+      console.log('update:', data)
+      updateTag.mutate(
+        {
+          id: tag.id,
+          title: data.title,
+          statuses: data.statuses
+            .filter((f) => f.title.trim() !== '')
+            .map((s) => ({
+              id: s.id,
+              title: s.title,
+              color: s.color,
+              position: s.position,
+            })),
+        },
+        {
+          onSuccess: () => {
+            toast.success('Tag updated!', { autoClose: 500 })
+            form.reset()
+            onCloseClik?.()
+            setIsLoading(false)
+          },
+          onError: (error) => {
+            console.log('error: ', error.message)
+            toast.error(error.message)
+          },
+        }
+      )
+    } else {
+      useAddTag.mutate(
+        {
+          title: data.title,
+          statuses: data.statuses
+            .filter((f) => f.title.trim() !== '')
+            .map((s) => ({
+              title: s.title,
+              color: s.color,
+              position: s.position,
+            })),
+        },
+        {
+          onSuccess: (res) => {
+            console.log('✔😁 res: ', res)
+            toast.success('Tag created!')
+            form.reset()
+            onCloseClik?.()
+            setIsLoading(false)
+          },
+          onError: (error) => {
+            console.log('error: ', error.message)
+            toast.error(error.message)
+          },
+        }
+      )
+    }
   }
   return (
-    <Card
-      className={cn(
-        'fixed top-[50%] left-[50%] h-fit w-70 md:w-auto  -translate-[50%]',
-        className
-      )}
-      {...props}
-    >
+    <Card className={cn('w-70 md:max-w-82', className)} {...props}>
       <CardHeader>
-        <CardTitle>Create a tag</CardTitle>
+        <CardTitle>{tag ? 'Update' : 'Create'} a tag</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -75,6 +161,7 @@ function FormAddTag({
                   <FieldLabel htmlFor="title">Tag name</FieldLabel>
                   <FormControl>
                     <Input
+                      disabled={isLoading}
                       className="text-sm"
                       placeholder="Web design"
                       {...field}
@@ -89,7 +176,7 @@ function FormAddTag({
             <div className="max-h-48 space-y-4 overflow-auto">
               {fields.map((sb, i) => (
                 <FormField
-                  key={sb.id}
+                  key={sb._tempId}
                   control={form.control}
                   name={`statuses.${i}.title`}
                   render={({ field }) => (
@@ -101,6 +188,7 @@ function FormAddTag({
                         />
                         <FormControl>
                           <Input
+                            disabled={isLoading}
                             className="text-sm"
                             placeholder="Make coffee"
                             {...field}
@@ -119,14 +207,17 @@ function FormAddTag({
             </div>
 
             <Button
+              disabled={isLoading}
+              type="button"
               onClick={() =>
                 append({
-                  id: crypto.randomUUID(),
+                  _tempId: crypto.randomUUID(),
                   title: '',
                   color: uniqolor(crypto.randomUUID()).color,
+                  position: fields.length,
                 })
               }
-              className="bg-foreground w-full text-background"
+              className="bg-foreground text-background my-3 w-full"
             >
               <Plus className="size-4" />
               Add Status
@@ -134,7 +225,10 @@ function FormAddTag({
 
             <FieldGroup>
               <Field>
-                <Button type="submit">Create Tag</Button>
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading && <Spinner />}
+                  {tag ? 'Update' : 'Create'} Tag
+                </Button>
               </Field>
             </FieldGroup>
           </form>

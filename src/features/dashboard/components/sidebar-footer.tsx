@@ -34,6 +34,7 @@ function SidebarFooter({
       <NavUser
         className={`z-20 transition-all duration-300 ease-in-out hiddenn @[10rem]:block anime ${isActive ? 'visible scale-100 opacity-100' : 'invisible scale-75 opacity-0'}`}
       />
+     
     </div>
   )
 }

@@ -17,37 +17,82 @@ import {
   FormMessage,
 } from '@/features/auth/components/ui/Form'
 import { Button } from '@/shared/components/ui/button'
+import { Checkbox } from '@/shared/components/ui/checkbox'
 import { Input } from '@/shared/components/ui/input'
-import { Textarea } from '@/shared/components/ui/teastarea'
+import { Textarea } from '@/shared/components/ui/texstarea'
 import { cn } from '@/shared/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X } from 'lucide-react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
+import { useCreateTask, useUpdateTasks } from '../hooks/task-hook'
 import {
-  statuses,
   TaskDialogSchema,
-  type DialogTask
+  type DialogTask,
+  type Statuses,
+  type Tasks,
 } from '../utils/types'
 import { SelectStatus } from './ui/select-status'
+import { Spinner } from '@/shared/components/ui/spinner'
+
+type FormAddTaskProp = React.ComponentProps<'div'> & {
+  className?: string
+  status: Statuses
+  position: number
+  statuses: Statuses[]
+  onCloseClik?: () => void
+  task?: Tasks
+}
 
 function FormAddTask({
+  task,
   className,
+  status,
+  position,
+  statuses,
+  onCloseClik,
   ...props
-}: React.ComponentProps<'div'> & { className?: string }) {
+}: FormAddTaskProp) {
+  const [isLoading, setIsLoading] = useState(false)
+  const addTask = useCreateTask()
+  const updateTask = useUpdateTasks()
+
   const form = useForm({
     resolver: zodResolver(TaskDialogSchema),
-    defaultValues: {
-      id: crypto.randomUUID(),
-      title: '',
-      // description: '',
-      subtasks: [{ id: crypto.randomUUID(), title: '' }],
-      currentStatus: statuses[0].title,
-    },
     mode: 'onChange',
   })
 
-  // const subs = useWatch({ control: form.control, name: 'subtasks' }) || []
+  useEffect(() => {
+    if (task) {
+      console.log('status.title', status.title)
+      console.log('task.currentStatus', task?.currentStatus)
+      console.log('status.id', status.id)
+      // reset for update task
+      form.reset({
+        id: task.id,
+        title: task.title,
+        position: position,
+        statusId: status.id,
+        description: task.description,
+        currentStatus: task?.currentStatus,
+        subtasks: task.subtasks,
+      })
+    } else {
+      // reset for add task
+      form.reset({
+        title: '',
+        description: '',
+        statusId: status.id,
+        position: position,
+        currentStatus: status.title,
+        subtasks: [
+          { _tempId: crypto.randomUUID(), title: 'Make coffee', isDone: true },
+          { _tempId: crypto.randomUUID(), title: 'Take break', isDone: false },
+        ],
+      })
+    }
+  }, [task, form, status])
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -55,8 +100,71 @@ function FormAddTask({
   })
 
   const onSubmit = async (data: DialogTask) => {
-    console.log('🟡 data: ', data)
+    setIsLoading(true)
+    if (task?.id) {
+      updateTask.mutate(
+        {
+          id: task.id,
+          updateTask: {
+            title: data.title,
+            description: data.description,
+            position: data.position,
+            currentStatus: data.currentStatus,
+            statusId: data.statusId,
+            subtasks: data.subtasks
+              .filter((f) => f.title.trim() !== '')
+              .map((s) => ({
+                id: s.id,
+                title: s.title,
+                isDone: s.isDone,
+              })),
+          },
+        },
+        {
+          onSuccess: () => {
+            toast.success('Task updated!', { autoClose: 500 })
+            form.reset()
+            onCloseClik?.()
+            setIsLoading(false)
+          },
+          onError: (error) => {
+            console.log('error: ', error.message)
+            toast.error(error.message)
+          },
+        }
+      )
+    } else {
+      addTask.mutate(
+        {
+          title: data.title,
+          description: data.description,
+          position: data.position,
+          currentStatus: data.currentStatus,
+          statusId: data.statusId,
+          subtasks: data.subtasks
+            .filter((f) => f.title.trim() !== '')
+            .map((s) => ({
+              id: s.id,
+              title: s.title,
+              isDone: s.isDone,
+            })),
+        },
+        {
+          onSuccess: () => {
+            toast.success('Task created!', { autoClose: 500 })
+            form.reset()
+            onCloseClik?.()
+            setIsLoading(false)
+          },
+          onError: (error) => {
+            console.log('error: ', error.message)
+            toast.error(error.message)
+          },
+        }
+      )
+    }
   }
+
   return (
     <Card
       className={cn(
@@ -66,7 +174,7 @@ function FormAddTask({
       {...props}
     >
       <CardHeader>
-        <CardTitle>Create a task</CardTitle>
+        <CardTitle>{!task?.id ? 'Create' : 'Update'} a task</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -79,6 +187,7 @@ function FormAddTask({
                   <FieldLabel htmlFor="title">Title</FieldLabel>
                   <FormControl>
                     <Input
+                      disabled={isLoading}
                       className="text-sm"
                       placeholder="Take coffee break"
                       {...field}
@@ -97,6 +206,7 @@ function FormAddTask({
                   <FieldLabel>Description</FieldLabel>
                   <FormControl>
                     <Textarea
+                      disabled={isLoading}
                       className="h-22 text-sm"
                       placeholder="e.g. It’s always good to take a break. This 15 minute break will recharge the batteries a little"
                       {...field}
@@ -110,35 +220,62 @@ function FormAddTask({
             <FieldLabel htmlFor="subtasks">Subtasks</FieldLabel>
             <div className="max-h-48 space-y-4 overflow-auto">
               {fields.map((sb, i) => (
-                <FormField
-                  key={sb.id}
-                  control={form.control}
-                  name={`subtasks.${i}.title`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center gap-x-1">
+                <div key={sb.id} className="flex items-center gap-x-1">
+                  {/* Title input field */}
+                  <FormField
+                    key={sb.id}
+                    control={form.control}
+                    name={`subtasks.${i}.title`}
+                    render={({ field }) => (
+                      <FormItem>
                         <FormControl>
                           <Input
-                            className="text-sm"
+                            disabled={isLoading}
+                            className={`text-sm ${form.watch(`subtasks.${i}.isDone`) && 'line-through'}`}
                             placeholder="Make coffee"
                             {...field}
                           />
                         </FormControl>
-                        <X
-                          onClick={() => remove(i)}
-                          className="text-foreground/50 shrink-0"
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* Checkbox field */}
+                  <FormField
+                    name={`subtasks.${i}.isDone`}
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Checkbox
+                          disabled={isLoading}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked === true)
+                          }}
+                          className="shrink-0"
+                          checked={!!field.value}
                         />
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                      </FormItem>
+                    )}
+                  />
+                  <X
+                    onClick={() => remove(i)}
+                    className="text-foreground/50 shrink-0"
+                  />
+                </div>
               ))}
             </div>
 
             <Button
-              onClick={() => append({ id: crypto.randomUUID(), title: '' })}
-              className="bg-foreground w-full"
+              disabled={isLoading}
+              type="button"
+              onClick={() =>
+                append({
+                  _tempId: crypto.randomUUID(),
+                  title: '',
+                  isDone: false,
+                })
+              }
+              className="bg-background text-foreground w-full"
             >
               <Plus className="size-4" />
               Add Subtask
@@ -149,11 +286,15 @@ function FormAddTask({
               name="currentStatus"
               render={({ field }) => (
                 <FormItem>
-                  <FieldLabel htmlFor="subtasks">Statuses</FieldLabel>
+                  <FieldLabel htmlFor="currentStatus">Statuses</FieldLabel>
                   <FormControl>
                     <SelectStatus
+                      value={field.value}
                       statuses={statuses}
-                      selectStatus={(s) => field.onChange(s.title)}
+                      selectStatus={(s) => {
+                        field.onChange(s.title)
+                        if (s.id) form.setValue('statusId', s.id)
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -163,7 +304,10 @@ function FormAddTask({
 
             <FieldGroup>
               <Field>
-                <Button type="submit">Create Task</Button>
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading && <Spinner />}
+                  {!task?.id ? 'Create' : 'Update'} Task
+                </Button>
               </Field>
             </FieldGroup>
           </form>

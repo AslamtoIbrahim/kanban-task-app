@@ -1,9 +1,10 @@
 import { Button } from '@/shared/components/ui/button'
 import { animate, cn } from '@/shared/lib/utils'
 import { Plus } from 'lucide-react'
-import SideBarButton from './ui/sidebar-button'
 import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import FormAddTask from './form-add-task'
+import SideBarButton from './ui/sidebar-button'
 
 function Header({
   onSideBarButtonClick,
@@ -14,6 +15,8 @@ function Header({
   onSideBarButtonClick?: () => void
 }) {
   const [isDialogActive, setIstask] = useState(false)
+  const location = useLocation()
+  const title = location.state?.title ?? ''
 
   return (
     <div
@@ -25,27 +28,12 @@ function Header({
     >
       <SideBarButton
         onClick={onSideBarButtonClick}
-        className="anime -ml-1 @[10rem]:ml-0 z-20"
+        className="anime z-20 -ml-1 @[10rem]:ml-0"
       />
       <hr className="border-foreground/50 anime hidden h-full border @min-[10rem]/header:block" />
       <h1 className="font-roboto anime hidden font-semibold @min-[10rem]/header:block">
-        Tag Title
+        {title}
       </h1>
-      <Button
-        onClick={() => setIstask((p) => !p)}
-        variant={'ghost'}
-        className="hover:bg-foreground/10 rounded my-0 ml-auto hidden py-0 text-[12px] md:inline-flex"
-      >
-        <Plus />
-        Add Task
-      </Button>
-      {isDialogActive && (
-        <div
-          onClick={() => setIstask(false)}
-          className="bg-foreground/35 fixed inset-0 z-20"
-        />
-      )}
-      <FormAddTask className={cn('z-20', animate(isDialogActive))} />
     </div>
   )
 }

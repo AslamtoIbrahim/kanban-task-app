@@ -1,13 +1,13 @@
 import { cn } from '@/shared/lib/utils';
 import { ChevronDown } from 'lucide-react';
 import { BsCircleFill } from 'react-icons/bs';
-import type { Status } from '../../utils/types';
+import type { Statuses } from '../../utils/types';
 
 function StatusButton({
   status,
   className,
   ...props
-}: React.ComponentProps<'button'> & { className?: string; status: Status }) {
+}: React.ComponentProps<'button'> & { className?: string; status: Statuses }) {
   return (
     <button
       className={cn(

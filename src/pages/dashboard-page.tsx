@@ -1,14 +1,14 @@
 import AppSidebar from '@/features/dashboard/components/app-sidebar'
 import Header from '@/features/dashboard/components/header'
-import Main from '@/features/dashboard/components/main'
 import { useMediaQuery } from '@react-hook/media-query'
 import { useState } from 'react'
+import { Outlet } from 'react-router-dom'
 
 function DashboardPage() {
   const [isSideOpen, setIsSideOpen] = useState(false)
   const isTablet = useMediaQuery('(max-width: 425px)')
+  
   const onSideBarButtonClickHandler = () => {
-    console.log('isSideOpen: ', isSideOpen)
     setIsSideOpen((prev) => !prev)
   }
   const onDivCloseClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -18,7 +18,6 @@ function DashboardPage() {
       setIsSideOpen(false)
     }
 
-    console.log('isSideOpen: e', isSideOpen)
   }
   return (
     <div className="flex">
@@ -29,7 +28,8 @@ function DashboardPage() {
       />
       <div className={`bg-popover flex flex-1 flex-col`}>
         <Header onSideBarButtonClick={onSideBarButtonClickHandler} />
-        <Main />
+        {/* <Main /> */}
+        <Outlet />
       </div>
 
       {isSideOpen && (

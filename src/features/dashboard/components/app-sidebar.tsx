@@ -7,12 +7,13 @@ import SidebarContent from './sidebar-content'
 import SidebarFooter from './sidebar-footer'
 import SidebarHeader from './sidebar-header'
 import FormAddTag from './ui/form-add-tag'
+import Dialog from '@/shared/components/ui/dialog'
 
 const AppSidebar = ({
   className,
   ...props
 }: React.ComponentProps<'div'> & { className?: string }) => {
-  const [isTagActive, setIsTagActive] = useState(false)
+  const [isTagOpen, setIsTagOpen] = useState(false)
   return (
     <div
       className={cn(
@@ -23,15 +24,14 @@ const AppSidebar = ({
     >
       <SidebarHeader className="" />
       <SidebarContent className="anime max-h-[75%] @max-[10rem]/sidebar:hidden" />
-      {isTagActive && (
-        <div
-          onClick={() => setIsTagActive(false)}
-          className="bg-foreground/35 fixed inset-0"
+      <Dialog open={isTagOpen} closeDialog={() => setIsTagOpen(false)}>
+        <FormAddTag
+          onCloseClik={() => setIsTagOpen(false)}
+          className={animate(isTagOpen)}
         />
-      )}
-      <FormAddTag className={animate(isTagActive)} />
+      </Dialog>
       <Button
-        onClick={() => setIsTagActive((p) => !p)}
+        onClick={() => setIsTagOpen((p) => !p)}
         variant={'outline'}
         className="anime mx-2 mt-6 @max-[10rem]/sidebar:hidden"
       >

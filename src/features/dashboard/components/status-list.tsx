@@ -1,23 +1,26 @@
 import { cn } from '@/shared/lib/utils'
-import { Plus } from 'lucide-react'
-import { useState } from 'react'
+import { Edit, Plus, Trash } from 'lucide-react'
 import { BsCircleFill } from 'react-icons/bs'
-import type { Status } from '../utils/types'
+import type { Statuses } from '../utils/types'
 import ButtonIcon from './ui/button-icon'
 
 function StatusList({
   addStatusClick,
+  onDeleteStatus,
+  onUpdateStatus,
   statuses,
   onSelectStatus,
   className,
   ...props
 }: React.ComponentProps<'div'> & {
-  statuses: Status[]
+  statuses: Statuses[]
   className?: string
-  onSelectStatus?: (status: Status) => void
+  onSelectStatus?: (status: Statuses) => void
+  onUpdateStatus?: (status: Statuses) => void
+  onDeleteStatus?: (id: string) => void
   addStatusClick?: () => void
 }) {
-  const [status, setStatus] = useState(statuses[0])
+
   return (
     <div
       className={cn(
@@ -27,8 +30,7 @@ function StatusList({
       {...props}
     >
       <div className="flex items-center gap-2 px-2 pb-2">
-        <BsCircleFill className="size-4" style={{ color: status.color }} />
-        <p className="truncate">{status.title}</p>
+        <p className="text-foreground/80">Statuses</p>
         <Plus
           className="text-foreground/50 hover:text-primary mr-2 ml-auto size-4"
           onClick={addStatusClick}
@@ -37,21 +39,31 @@ function StatusList({
       <hr />
       <div className="max-h-92 overflow-auto">
         {statuses.map((s) => (
-          <ButtonIcon
-            key={s.id}
-            className="flex items-center justify-start"
-            onClick={() => {
-              console.log('status: ', status)
-              onSelectStatus?.(s)
-              setStatus(s)
-            }}
-          >
-            <BsCircleFill
-              style={{ color: s.color }}
-              className="size-4 flex-none shrink-0"
+          <div key={s.id} className="flex items-center justify-start pr-4">
+            <ButtonIcon
+              key={s.id}
+              className="flex items-center justify-start"
+              onClick={() => {
+                onSelectStatus?.(s)
+              }}
+            >
+              <BsCircleFill
+                style={{ color: s.color }}
+                className="size-4 flex-none shrink-0"
+              />
+              <p className="truncate">{s.title}</p>
+            </ButtonIcon>
+            <Trash
+              onClick={() => {
+                onDeleteStatus?.(s.id)
+              }}
+              className="zoom text-foreground/50 mr-2 ml-auto size-5"
             />
-            <p className="truncate">{s.title}</p>
-          </ButtonIcon>
+            <Edit
+              onClick={() => onUpdateStatus?.(s)}
+              className="zoom text-foreground/50 ml-auto size-5"
+            />
+          </div>
         ))}
       </div>
     </div>
