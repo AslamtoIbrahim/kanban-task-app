@@ -2,17 +2,23 @@ import Dialog from '@/shared/components/ui/dialog'
 import { Spinner } from '@/shared/components/ui/spinner'
 import { animate, cn } from '@/shared/lib/utils'
 import { Edit, PlusCircle, Trash } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BsCircleFill } from 'react-icons/bs'
 import { InView } from 'react-intersection-observer'
 import { toast } from 'react-toastify'
 import { useDeleteStatuses } from '../hooks/status-hook'
-import { useDeleteTask, useGetAllTasks } from '../hooks/task-hook'
+import {
+  useDeleteTask,
+  useGetAllTasks,
+  useUpdateTasks,
+} from '../hooks/task-hook'
 import type { Statuses, Tasks } from '../utils/types'
 import DeleteDialog from './delete-dialog'
 import FormAddStatus from './form-add-status'
 import FormAddTask from './form-add-task'
 import TaskItem from './ui/task-item'
+import { DndContext, closestCenter } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
 type StatusContainerProp = React.ComponentProps<'div'> & {
   className?: string
@@ -35,13 +41,21 @@ function StatusContainer({
   const [deletedTaskId, setDeletedTaskId] = useState<string | null>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const deleteTask = useDeleteTask()
+  const [localTasks, setLocalTasks] = useState<Tasks[]>([])
+  const updateTaskMutation = useUpdateTasks()
 
   const { data, error, isPending, fetchNextPage, hasNextPage } = useGetAllTasks(
     status.id
   )
 
+  useEffect(() => {
+    if (data) {
+      const tasks = data.pages.flatMap((p) => p.tasks?.map((t) => t) ?? [])
+      if (tasks) setLocalTasks(tasks)
+    }
+  }, [data])
+
   const showTaskDialog = () => {
-    console.log('editedTask', editedTask)
     setEditedTask(null)
     setIsTaskDialogOpen((pr) => !pr)
   }
@@ -73,7 +87,6 @@ function StatusContainer({
 
   const handleOnchangeView = (inView: boolean) => {
     if (inView) {
-      console.log('inView: ', inView)
       fetchNextPage()
     }
   }
@@ -84,6 +97,7 @@ function StatusContainer({
   }
 
   const handleOnDeleteTask = (id: string) => {
+    console.log('id', id)
     setDeletedTaskId(id)
     setIsDeleteDialogOpen((pr) => !pr)
   }
@@ -104,16 +118,42 @@ function StatusContainer({
     }
   }
 
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = localTasks.findIndex((t) => t.id === active.id)
+    const newIndex = localTasks.findIndex((t) => t.id === over.id)
+
+    const newOrder = [...localTasks]
+    const [moved] = newOrder.splice(oldIndex, 1)
+    newOrder.splice(newIndex, 0, moved)
+
+    // update position
+    const updated = newOrder.map((t, i) => ({
+      ...t,
+      position: i,
+    }))
+    setLocalTasks(updated)
+
+    updated.forEach((t) => {
+      updateTaskMutation.mutate(
+        { id: t.id, updateTask: t },
+        {
+          onError(error) {
+            console.log('error', error)
+          },
+        }
+      )
+    })
+  }
+
   if (error) {
     return null
   }
 
   if (isPending) {
-    return (
-      <div className="flex h-[calc(100vh-5rem)] items-center justify-center py-2">
-        <Spinner />
-      </div>
-    )
+    return null
   }
 
   // console.log('status.title: ',status.title);
@@ -138,15 +178,24 @@ function StatusContainer({
           className="zoom icons"
         />
       </div>
-      {tasks.map((t, i) => (
-        <TaskItem
-          onDeleteTask={handleOnDeleteTask}
-          onUpdateTask={handleOnUpdateTask}
-          task={t}
-          key={i}
-        />
-      ))}
-      {hasNextPage && (
+
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext
+          items={localTasks.map((t) => t.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {localTasks.map((t, i) => (
+            <TaskItem
+              onDeleteTask={handleOnDeleteTask}
+              onUpdateTask={handleOnUpdateTask}
+              task={t}
+              key={i}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
+
+      {tasks && hasNextPage && (
         <InView className="flex justify-center" onChange={handleOnchangeView}>
           <Spinner />
         </InView>

@@ -8,7 +8,7 @@ export const createNewTask = async (task: DialogTask) => {
       withCredentials: true,
     })
 
-    console.log('createNewTask 💎',res.data)
+    // console.log('createNewTask 💎',res.data)
 
     return res.data
   } catch (error) {
@@ -74,7 +74,7 @@ export const updateTask = async ({
         withCredentials: true,
       }
     )
-    console.log('updateTask 😍: ', res.data)
+    // console.log('updateTask 😍: ', res.data)
     return res.data
   } catch (error) {
     console.log('error: ', error)
@@ -87,7 +87,7 @@ export const deleteTask = async (id: string) => {
     const res = await axios.delete(`${BASE_API_URL}/task/${id}`, {
       withCredentials: true,
     })
-    console.log('deleteTask : ', res.data)
+    // console.log('deleteTask : ', res.data)
     return res.data
   } catch (error) {
     console.log('error: ', error)

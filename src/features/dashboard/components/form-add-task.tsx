@@ -65,9 +65,6 @@ function FormAddTask({
 
   useEffect(() => {
     if (task) {
-      console.log('status.title', status.title)
-      console.log('task.currentStatus', task?.currentStatus)
-      console.log('status.id', status.id)
       // reset for update task
       form.reset({
         id: task.id,

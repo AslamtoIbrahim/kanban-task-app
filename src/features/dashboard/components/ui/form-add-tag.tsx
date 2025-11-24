@@ -84,13 +84,8 @@ function FormAddTag({
 
   const onSubmit = (data: DialogTag) => {
     setIsLoading(true)
-    console.log('🧧 tag: ', data)
-    console.log(
-      '🥎 unique: ',
-      data.statuses.filter((s) => s.title.trim() !== '')
-    )
+    // console.log('🧧 tag: ', data)
     if (tag?.id) {
-      console.log('update:', data)
       updateTag.mutate(
         {
           id: tag.id,

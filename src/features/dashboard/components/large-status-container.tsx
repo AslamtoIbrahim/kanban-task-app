@@ -1,6 +1,5 @@
 import { Button } from '@/shared/components/ui/button'
 import Dialog from '@/shared/components/ui/dialog'
-import { Spinner } from '@/shared/components/ui/spinner'
 import { animate, cn } from '@/shared/lib/utils'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
@@ -19,20 +18,19 @@ function LargeStatusContainer({
   ...props
 }: TaskContainerProp) {
   const [isAddStatusActive, setIsAddStatusActive] = useState(false)
-  const { data, error, isPending } = useGetAllStatuses(tagId)
+  const { data, error, isPending, isSuccess } = useGetAllStatuses(tagId)
+   
 
   if (error) {
     return null
   }
 
   if (isPending) {
-    return (
-      <div className="flex h-[calc(100vh-2.5rem)] items-center justify-center py-2">
-        <Spinner />
-      </div>
-    )
+    return null
   }
+
   const statuses = data.pages.flatMap((p) => p.statuses.map((s) => s) ?? [])
+
   return (
     <div
       className={cn(
@@ -41,25 +39,25 @@ function LargeStatusContainer({
       )}
       {...props}
     >
-      {data.pages.flatMap((p) =>
-        p.statuses.map((s) => (
-          <StatusContainer
-            statuses={statuses}
-            tagId={tagId}
-            status={s}
-            key={s.id}
-          />
-        ))
-      )}
+      {statuses.map((s) => (
+        <StatusContainer
+          statuses={statuses}
+          tagId={tagId}
+          status={s}
+          key={s.id}
+        />
+      ))}
 
-      <Button
-        onClick={() => setIsAddStatusActive((pv) => !pv)}
-        variant={'outline'}
-        className="m-2 hidden h-[calc(100vh-5.5rem)] md:inline-flex md:w-50"
-      >
-        <Plus />
-        Add Status
-      </Button>
+      {isSuccess && statuses?.[statuses.length - 1].title && (
+        <Button
+          onClick={() => setIsAddStatusActive((pv) => !pv)}
+          variant={'outline'}
+          className="m-2 hidden h-[calc(100vh-5.5rem)] md:inline-flex md:w-50"
+        >
+          <Plus />
+          Add Status
+        </Button>
+      )}
       <Dialog
         className="z-50"
         open={isAddStatusActive}

@@ -17,6 +17,8 @@ export const useCreateTask = () => {
     mutationFn: createNewTask,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
+      queryClient.invalidateQueries({ queryKey: ['statuses'] })
+      queryClient.invalidateQueries({ queryKey: ['tags'] })
     },
   })
 }
@@ -37,8 +39,9 @@ export const useUpdateTasks = () => {
     mutationKey: ['task'],
     mutationFn: updateTask,
     onSuccess: (res) => {
-      console.log('onSuccess: ', res)
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
+      queryClient.invalidateQueries({ queryKey: ['statuses'] })
+      queryClient.invalidateQueries({ queryKey: ['tags'] })
       queryClient.invalidateQueries({ queryKey: ['task', res.title] })
     },
   })
@@ -51,6 +54,8 @@ export const useDeleteTask = () => {
     mutationFn: deleteTask,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
+      queryClient.invalidateQueries({ queryKey: ['statuses'] })
+      queryClient.invalidateQueries({ queryKey: ['tags'] })
     },
   })
 }

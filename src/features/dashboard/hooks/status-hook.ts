@@ -17,6 +17,7 @@ export const useCreateStatus = () => {
     mutationFn: createNewStatus,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['statuses'] })
+      queryClient.invalidateQueries({ queryKey: ['tags'] })
     },
   })
 }
@@ -39,6 +40,7 @@ export const useUpdateStatuses = () => {
     onSuccess: (res) => {
       console.log('onSuccess: ', res)
       queryClient.invalidateQueries({ queryKey: ['statuses'] })
+      queryClient.invalidateQueries({ queryKey: ['tags'] })
       queryClient.invalidateQueries({ queryKey: ['status', res.title] })
     },
   })
@@ -51,6 +53,7 @@ export const useDeleteStatuses = () => {
     mutationFn: deleteStatus,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['statuses'] })
+      queryClient.invalidateQueries({ queryKey: ['tags'] })
     },
   })
 }

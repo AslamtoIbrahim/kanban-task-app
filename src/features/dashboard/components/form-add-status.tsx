@@ -77,7 +77,7 @@ function FormAddStatus({
   }, [form, status])
 
   const onSubmit = async (data: DialogStatus) => {
-    console.log('🧧 onSubmit status: ', data)
+    // console.log('🧧 onSubmit status: ', data)
     setIsLoading(true)
     if (!data) return
 

@@ -28,7 +28,7 @@ export const StatusDialogSchema = z
     tagId: z.string(),
   })
   .superRefine(async (data, ctx) => {
-    console.log('superRefine: ', data)
+    // console.log('superRefine: ', data)
     // you add api here
     // const exist = statuses.find((s) => s.title === data.title)
     const { exist, id } = await checkStatus(data.title, data.tagId)
@@ -144,6 +144,7 @@ export type Statuses = {
   color: string
   position: number
   tagId: string
+  tasks: Tasks[]
 }
 
 export type AxiosStatuses = {
