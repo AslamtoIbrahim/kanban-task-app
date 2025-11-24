@@ -61,7 +61,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     await authService.signIn.social(
       {
         provider: "google",
-        callbackURL: "http://localhost:5173",
+        // callbackURL: "http://localhost:5173",
+        callbackURL: "https://dancing-longma-3d3bef.netlify.app",
       },
       {
         onSuccess() {
