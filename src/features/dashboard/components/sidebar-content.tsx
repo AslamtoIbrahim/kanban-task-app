@@ -9,6 +9,7 @@ import type { Tag } from '../utils/types'
 import DeleteDialog from './delete-dialog'
 import FormAddTag from './ui/form-add-tag'
 import TagItem from './ui/tag-item'
+import { useNavigate } from 'react-router-dom'
 function SidebarContent({
   className,
   ...props
@@ -19,7 +20,7 @@ function SidebarContent({
   const [selectedTag, setSelectedTag] = useState<Tag>()
   const [selectedId, setSelectedId] = useState<string>()
   const deleteTag = useDeleteTag()
-
+  const navigate = useNavigate()
   const onChangeHandler = (inView: boolean) => {
     if (inView) {
       fetchNextPage()
@@ -47,6 +48,7 @@ function SidebarContent({
         onSuccess: () => {
           toast.success('Tag deleted!', { autoClose: 500 })
           setOpenDeleteDialog(false)
+          navigate('/')
         },
         onError: (error) => {
           console.log('error: ', error.message)
