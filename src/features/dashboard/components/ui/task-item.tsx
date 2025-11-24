@@ -59,7 +59,7 @@ function TaskItem({
       <GripVertical
         {...listeners}
         onClick={handleDeleteSelectID}
-        className="text-foreground/50 hover:text-foreground/90 size-4 shrink-0 cursor-grab"
+        className="text-foreground/50 hover:text-foreground/90 size-4 shrink-0 cursor-grab hidden md:block"
       />
       <div>
         <p className="truncate font-semibold">{task.title}</p>
