@@ -67,13 +67,9 @@ export const updateTask = async ({
   updateTask: Task
 }) => {
   try {
-    const res = await axios.patch(
-      `${BASE_API_URL}/task/${id}`,
-      updateTask,
-      {
-        withCredentials: true,
-      }
-    )
+    const res = await axios.patch(`${BASE_API_URL}/task/${id}`, updateTask, {
+      withCredentials: true,
+    })
     // console.log('updateTask 😍: ', res.data)
     return res.data
   } catch (error) {

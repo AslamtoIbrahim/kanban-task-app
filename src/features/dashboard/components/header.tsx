@@ -1,9 +1,5 @@
-import { Button } from '@/shared/components/ui/button'
-import { animate, cn } from '@/shared/lib/utils'
-import { Plus } from 'lucide-react'
-import { useState } from 'react'
+import { cn } from '@/shared/lib/utils'
 import { useLocation } from 'react-router-dom'
-import FormAddTask from './form-add-task'
 import SideBarButton from './ui/sidebar-button'
 
 function Header({
@@ -14,7 +10,6 @@ function Header({
   className?: string
   onSideBarButtonClick?: () => void
 }) {
-  const [isDialogActive, setIstask] = useState(false)
   const location = useLocation()
   const title = location.state?.title ?? ''
 
