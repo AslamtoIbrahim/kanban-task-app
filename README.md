@@ -1,73 +1,74 @@
-# React + TypeScript + Vite
+# Task Management Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack task management application built with **React** and **Tailwind CSS** on the frontend, and **NestJS** with **Prisma** on the backend.  
 
-Currently, two official plugins are available:
+Users can manage boards, tasks, and subtasks with an intuitive interface, toggle light/dark mode, and enjoy a responsive design optimized for all screen sizes.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **CRUD Boards & Tasks:** Create, view, edit, and delete boards and tasks.
+- **Subtasks:** Mark subtasks as complete.
+- **Drag & Drop (Bonus):** Reorder tasks within columns and move them between columns.
+- **Form Validation:** Ensure valid input when creating or editing boards and tasks.
+- **Sidebar Toggle:** Hide or show the board sidebar.
+- **Theme Toggle:** Switch between light and dark modes.
+- **Responsive Layout:** Works smoothly on all devices.
+- **Persistent Data:** Backend stores all changes so data persists across sessions.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Backend
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+The backend is built with **NestJS** and handles all API requests for boards, tasks, and subtasks.  
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Key technologies:
+- NestJS (Node.js framework)
+- Prisma ORM
+- PostgreSQL 
+- REST API endpoints for all CRUD operations
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+ 
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**Frontend:**
+- React
+- Tailwind CSS
+- React Router
+- React Hook Form (optional)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**Backend:**
+- NestJS
+- Node.js
+- Prisma ORM
+- PostgreSQL
+
+
+The frontend communicates with the backend hosted here:  
+[Kanban Task Backend](https://github.com/AslamtoIbrahim/kanban-task-backend)
+
+---
+
+## Screenshots
+
+### Signup
+![Dashboard](./screenshots/signup.png)
+
+### Dashboard
+![Dashboard](./screenshots/dashboard.png)
+
+### Create New Task
+![Create Task](./screenshots/create.png)
+
+### Delete Task
+![Task Details](./screenshots/delete.png)
+
+---
+
+## Live Demo
+
+Try the app online: [Task Management App Live Demo](https://dancing-longma-3d3bef.netlify.app)  
+ 
+ 
